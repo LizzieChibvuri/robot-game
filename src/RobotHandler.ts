@@ -7,19 +7,17 @@ const minIndex = 0
 const robotNotPlaceValidstionMessage="Invalid move,place robot on board first to proceed"
 const fileName = 'robot.txt'
 
-const fileExists = () => {
-  return fs.existsSync(fileName)
-}
-var isRobotPlaced = fileExists()
+const isRobotPlaced = fs.existsSync(fileName)
+
 export const getRobotGameInfo = () => {
   const instructions = `
-    $ node robot.js help   # Show game instructions
-    $ node robot.js Place  # Place the robot on the board
-    $ node robot.js Move   # Move robot one step in direction its facing
-    $ node robot.js Left   # Turn robot 90 degrees left from where its facing
-    $ node robot.js Right  # Turn robot 90 degrees to the right of where its facing
-    $ node robot.js Report # Display current robot position on board
-    $ node robot.js NewGame # Ends the current game and clears old robot position data
+    $ node out/robot.js  help   # Show game instructions
+    $ node out/robot.js  Place  # Place the robot on the board
+    $ node out/robot.js  Move   # Move robot one step in direction its facing
+    $ node out/robot.js  Left   # Turn robot 90 degrees left from where its facing
+    $ node out/robot.js  Right  # Turn robot 90 degrees to the right of where its facing
+    $ node out/robot.js  Report # Display current robot position on board
+    $ node out/robot.js  GameOver # Ends the current game and clears old robot position data
     `
   console.log(instructions)
 }
@@ -29,54 +27,50 @@ export const report = () => {
     console.log(robotNotPlaceValidstionMessage)
     return
   }
-  readRobotData()
+  getRobotPosition()
   console.log(`Output:${robotPosition?.X},${robotPosition?.Y},${robotPosition?.F}`)
 }
 
-const readRobotData=()=>{
+const getRobotPosition=()=>{
 let data = fs.readFileSync(fileName);
 robotPosition = JSON.parse(data);
 }
 
 export const place = (position: Position) => {
 
-  if (fileExists() === false) {
+  if (isRobotPlaced === false) {
     let createStream = fs.createWriteStream(fileName);
     createStream.end();
   }
-  writePositionToFile(position)
+  setRobotPosition(position)
 }
 
-const writePositionToFile = (position: Position) => {
-  let data = JSON.stringify(position);
-  fs.writeFileSync(fileName, data, { encoding: 'utf8', flag: 'w' });
-}
 export const move = () => {
   if (isRobotPlaced===false) {
     console.log(robotNotPlaceValidstionMessage)
     return
   }
 
-  readRobotData()
+  getRobotPosition()
 
   if (robotPosition.F === Direction.North) {
-    if (isValidMaxIndex(robotPosition.Y))
+    if (isLessThanMaxAllowedIndex(robotPosition.Y))
       robotPosition.Y = robotPosition.Y + 1
   }
   else if (robotPosition.F === Direction.South) {
-    if (isValidMinIndex(robotPosition.Y))
+    if (isGreaterThanMinAllowedIndex(robotPosition.Y))
       robotPosition.Y = robotPosition.Y - 1
   }
   else if (robotPosition.F === Direction.East) {
-    if (isValidMaxIndex(robotPosition.X))
+    if (isLessThanMaxAllowedIndex(robotPosition.X))
       robotPosition.X = robotPosition.X + 1
   }
   else if (robotPosition?.F === Direction.West) {
-    if (isValidMinIndex(robotPosition.X))
+    if (isGreaterThanMinAllowedIndex(robotPosition.X))
       robotPosition.X = robotPosition.X - 1
   }
 
-  writePositionToFile(robotPosition)
+  setRobotPosition(robotPosition)
 }
 
 export const left = () => {
@@ -84,7 +78,7 @@ export const left = () => {
     console.log(robotNotPlaceValidstionMessage)
     return
   }
-  readRobotData()
+  getRobotPosition()
   if (robotPosition.F === Direction.North)
     robotPosition.F = Direction.West
   else if (robotPosition?.F === Direction.South)
@@ -94,7 +88,7 @@ export const left = () => {
   else if (robotPosition?.F === Direction.West)
     robotPosition.F = Direction.South
 
-    writePositionToFile(robotPosition)
+    setRobotPosition(robotPosition)
 }
 
 export const right = () => {
@@ -102,7 +96,7 @@ export const right = () => {
     console.log(robotNotPlaceValidstionMessage)
     return
   }
-  readRobotData()
+  getRobotPosition()
   if (robotPosition.F === Direction.North)
     robotPosition.F = Direction.East
   else if (robotPosition.F === Direction.South)
@@ -112,10 +106,15 @@ export const right = () => {
   else if (robotPosition.F === Direction.West)
     robotPosition.F = Direction.North
 
-  writePositionToFile(robotPosition)
+  setRobotPosition(robotPosition)
 }
 
-export const deleteGameData = () => {
+const setRobotPosition = (position: Position) => {
+  let data = JSON.stringify(position);
+  fs.writeFileSync(fileName, data, { encoding: 'utf8', flag: 'w' });
+}
+
+export const deleteRobotDataFile = () => {
   try {
     fs.unlinkSync(fileName)
   } catch (err) {
@@ -123,11 +122,11 @@ export const deleteGameData = () => {
   }
 }
 
-const isValidMaxIndex = (index: number) => {
+const isLessThanMaxAllowedIndex = (index: number) => {
   return index < maxIndex ? true : false
 }
 
-const isValidMinIndex = (index: number) => {
+const isGreaterThanMinAllowedIndex = (index: number) => {
   return index > minIndex ? true : false
 }
 

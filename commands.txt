@@ -1,0 +1,44 @@
+Test Scenarios
++++++++++++++++
+
+1.increments y index if Move played when facing North
+Place 1,2,North
+Move
+Report
+Output:1,3
+
+2.decrements y index if Move played when facing South
+Place 1,2,South
+Move
+Report
+Output:1,1
+
+3.increments x index if Move played when facing East
+Place 1,2,
+Move
+Report
+Output:2,2
+
+4.decrements x index if Move played when facing West
+Place 1,2,South
+Move
+Report
+Output:0,2
+
+5.stays on same position if Move played and is at the edge of the board
+Place 0,4,North
+Move
+Report
+Output:0,4
+
+6.stays on same position and changes direction when Right played
+Place 0,4,North
+Right
+Report
+Output:0,4,East
+
+7.stays on same position and changes direction when Left played
+Place 0,4,West
+Left
+Report
+Output:0,4,South

@@ -44,8 +44,8 @@ switch(args[2]){
         break;
     }
 
-    case 'End':{
-        RobotHandler.deleteGameData()
+    case 'GameOver':{
+        RobotHandler.deleteRobotDataFile()
         break;
     }
 
